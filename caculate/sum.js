@@ -1,7 +1,7 @@
 // Modules protect their variables and functions from leaking
 
 //console.log("Sum Module Executed");
-
+require("../xyz.js");
 function calculateSum(a, b) {
   const sum = a + b;
 
