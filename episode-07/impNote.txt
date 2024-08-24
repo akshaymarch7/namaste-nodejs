@@ -1,0 +1,34 @@
+
+The reason the content of readFileSync in async.js file does not get printed in your original code is because of a fundamental misunderstanding in how readFileSync works in Node.js.
+
+Key Points:
+readFileSync is a synchronous method: This means that it immediately reads the file and returns its content. It does not accept a callback function. Instead, it returns the data directly (or throws an error if something goes wrong).
+
+Callback Misuse: In your original code, you are passing a callback function to readFileSync, but this method doesn't use callbacks. So, the callback is ignored, and the file is read, but the result is not stored or printed anywhere.
+
+What Happened in Your Code:
+javascript
+Copy code
+// This is incorrect usage of readFileSync
+fs.readFileSync('./file.txt','utf-8',(err,data)=>{
+    console.log("File data fetched synchronously: ", data);
+})
+The fs.readFileSync function reads the file and returns its content, but since you didn't capture the return value in a variable, the content is lost.
+The callback function you provided is ignored entirely, so console.log inside it is never executed.
+Correct Usage of readFileSync:
+You need to store the return value of readFileSync in a variable and then log it:
+
+javascript
+Copy code
+try {
+    const dataSync = fs.readFileSync('./file.txt', 'utf-8');
+    console.log("File data fetched synchronously: ", dataSync);
+} catch (err) {
+    console.error("Error reading file synchronously: ", err);
+}
+What Happens Here:
+The fs.readFileSync method reads the file and returns its content.
+The content is stored in the dataSync variable.
+The console.log statement prints the content of the file.
+Summary:
+The original code didn’t print the content of readFileSync because the returned data wasn’t captured, and the provided callback function was ignored. The correct approach is to store the return value of readFileSync in a variable and then use that variable to access and print the file content.

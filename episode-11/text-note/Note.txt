@@ -1,0 +1,104 @@
+What is Server? 
+server can be a hardware or software or both so when 
+we say deploy our application to server that's means we are 
+trying to run our application on remote operating system.
+
+can we use our computer as server or we need (AWS it provides computational resource ex EC2) always
+? ans - yes 
+example : when we enter namastedev.com it hits the computers of AWS.
+
+why I can't use my laptop?
+ans- because : 
+1.limited RAM (storage)
+2. My laptop can go down any time( very less availibility unlike ec2 instance provided by aws which is available 24*7)
+3. we have local internet connection by some iSP providers (Airtel, jio, BSNL, voda, idea) so when we use these 
+network they don't provide us IP guaranty so our IP can change but AWS EC2 instance provide us dedicatd IP 
+ex: namastedev has its server located in mumbai aws centre.
+
+software sever?
+I am creatiing http server using Node?
+ans-I am creating server application which handles user reuest
+
+
+Note: when we create server using 
+NodeJs we create HTTP which is called Node.js as a Web Server
+
+
+TCP/IP and HTTP are two fundamental protocols in the field of computer networking, but they serve different purposes and operate at different layers of the network stack.
+
+### TCP/IP (Transmission Control Protocol/Internet Protocol):
+1. **Layer**: TCP/IP operates at the transport and network layers of the OSI model. TCP (Transmission Control Protocol) is a transport layer protocol, while IP (Internet Protocol) is a network layer protocol.
+2. **Purpose**: TCP/IP is a suite of communication protocols used to interconnect network devices on the internet. TCP is responsible for ensuring reliable data transmission between devices, while IP handles the addressing and routing of packets between devices.
+3. **Functionality**:
+   - **TCP**: Establishes a connection between a sender and receiver, ensuring that data is delivered accurately and in order. It also manages retransmission in case of lost packets.
+   - **IP**: Manages the addressing and routing of packets, determining the path they take from the source to the destination.
+4. **Scope**: TCP/IP is the foundational protocol suite that enables internet communication, covering a wide range of protocols beyond just data transmission (e.g., UDP, ICMP, etc.).
+5. **Usage**: Used for general data transmission over the internet, such as file transfer, email, and browsing.
+
+### HTTP (Hypertext Transfer Protocol):
+1. **Layer**: HTTP operates at the application layer of the OSI model.
+2. **Purpose**: HTTP is a protocol used for transmitting hypertext (web pages) over the internet. It defines how messages are formatted and transmitted, and how web servers and browsers should respond to various commands.
+3. **Functionality**:
+   - **Request-Response Model**: HTTP works on a client-server model where the client (usually a web browser) sends an HTTP request to a server, and the server responds with the requested resources (like HTML pages, images, etc.).
+   - **Stateless**: Each HTTP request is independent, and the server does not retain any information about previous requests (though this can be managed through cookies and sessions).
+4. **Scope**: HTTP is specifically designed for the exchange of information on the World Wide Web.
+5. **Usage**: Used primarily for accessing and transmitting web pages, APIs, and other web resources.
+
+### Key Differences:
+- **Layer of Operation**: TCP/IP operates at the transport and network layers, while HTTP operates at the application layer.
+- **Purpose**: TCP/IP is a suite of protocols for general internet communication, while HTTP is specifically for web communication.
+- **Function**: TCP/IP provides the underlying infrastructure for data transfer, whereas HTTP is concerned with the content and structure of that data on the web.
+- **Protocol Relationship**: HTTP uses TCP/IP as its transport mechanism. When a web browser sends an HTTP request, it is actually sending the request data over a TCP connection, which is routed using IP.
+
+
+
+//............................................................................
+
+Yes, the computer (in this case, an Amazon EC2 instance) hosting the NamasteNodeJS website can indeed run multiple servers simultaneously. Here's how that works and how the system manages it:
+
+1. Multiple Servers on One EC2 Instance
+An Amazon EC2 instance is essentially a virtual server that can run a full-fledged operating system. This means you can run multiple applications or services (servers) on the same instance. For example:
+
+Web Server (HTTP/HTTPS): This could be running an Nginx or Apache server that handles HTTP and HTTPS requests on ports 80 and 443.
+Node.js Server: A Node.js application could be running on another port (e.g., port 3000 or 8080).
+Database Server: The same instance could also run a database server like MySQL or MongoDB on its respective port (e.g., port 3306 for MySQL).
+2. How Multiple Servers Work Together
+To manage multiple servers on the same machine, the operating system uses ports to distinguish between them. Each server listens on a specific port for incoming network traffic.
+
+Example Configuration:
+Nginx (Web Server): Listening on ports 80 (HTTP) and 443 (HTTPS).
+Node.js Application: Running on port 3000.
+MySQL Database: Running on port 3306.
+3. How Traffic is Routed:
+Let's say the EC2 instance is hosting https://namastedev.com/ and also running a Node.js backend server on the same instance.
+
+Request to NamasteDev.com:
+
+When a user visits https://namastedev.com/, the request is sent to the EC2 instance's public IP address on port 443.
+The Nginx server, listening on port 443, receives the request and checks its configuration to determine how to handle it.
+Proxying Requests to Node.js:
+
+Nginx can be configured to act as a reverse proxy. If a request needs to be handled by the Node.js application, Nginx forwards the request to the Node.js server running on port 3000.
+The Node.js server processes the request (e.g., accessing a database, executing some logic) and sends the response back to Nginx.
+Nginx then sends the response back to the client (the user's browser)
+
+Request Handling:
+
+Nginx handles static content (like HTML, CSS, and images) directly.
+Dynamic requests (like API calls) are forwarded to the Node.js server.
+The Node.js server handles the logic, possibly querying a MySQL database (running on the same instance), and then sends the data back through Nginx to the user.
+4. Security and Performance Considerations:
+Security: By using Nginx as a reverse proxy, you can add an additional layer of security, such as SSL termination, rate limiting, and request filtering.
+Performance: Nginx can also cache responses, reducing the load on the Node.js server.
+5. Summary:
+An EC2 instance running https://namastedev.com/ can indeed run multiple servers, such as an Nginx web server and a Node.js application server. Nginx listens for incoming HTTP/HTTPS requests on standard ports (80/443) and routes them appropriately. This setup allows multiple services to coexist on the same machine, each distinguished by different ports or using Nginx's proxying capabilities to route traffic internally.
+
+
+
+
+
+
+
+
+
+
