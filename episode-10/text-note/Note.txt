@@ -1,0 +1,63 @@
+ let we want to read a file we can't 
+ read a file in Main thread
+ because it will block the thread
+
+ so, v8 engine deligates its task to libuv
+ so libuv finds a thread from thread
+ pool and runs the file system from that 
+ particular thread only
+
+ Q- Nodejs is single threaded or multi threaded?
+ 1. is single threaded when we pass only asynchronous code.
+ 2. so , in case of asynchronous operation like crypto, file read , dns lookup etc it becomes multi
+  threaded by using libuv's thread pool 
+
+
+let if a server has lot of incomming request
+so there are multiple sockets descriptors(or file descriptor i.e fds) (threads) for incomming requests
+so, we need mulltiple TCP connections but it is not good idea
+to make one connection per thread for so many concurrent requests
+which tries to do write operation so wee need algorithm like epoll(Linux)
+and Kqueue(MacOS)[these are Scalable I/O event notification mechanism] at kernel level in OS
+note: epoll and kqueue are collection of multiple fds
+as it is notification machenism system so as soon as
+any activity happens on any connection it notifies to libuv
+
+HW- read about epoll, kqueue, fds, what ds epoll uses, event emmiters, streams, buffers,event listener, pipes
+
+
+Here's a more technical explanation of the above concepts:
+
+### Node.js Threading Model
+Node.js operates on a **single-threaded event loop** architecture. This means that the main thread, often referred to as the event loop, handles I/O operations, callbacks, and other asynchronous tasks. The single thread is efficient for handling I/O-bound tasks because it can quickly move on to the next task while waiting for I/O operations to complete.
+
+### Handling Blocking Operations
+When it comes to tasks that might block the main thread—such as file system operations, cryptography, or DNS lookups—Node.js delegates these tasks to a **worker thread pool** managed by **libuv**. Libuv is a multi-platform C library that provides the event loop and handles asynchronous operations. 
+
+- **Asynchronous Operations**: In Node.js, most I/O operations are asynchronous. This means that when you read a file, for example, the operation is offloaded to a worker thread in the thread pool. The event loop is free to handle other tasks while waiting for the I/O operation to complete.
+
+### Is Node.js Single-Threaded or Multi-Threaded?
+- **Single-Threaded**: The core event loop in Node.js is single-threaded. It handles non-blocking operations and delegates blocking operations to the thread pool.
+- **Multi-Threaded**: For operations that require heavy computation or would block the main thread (e.g., file I/O, cryptographic functions), Node.js becomes multi-threaded by utilizing the worker threads in libuv’s thread pool.
+
+### High-Concurrency with I/O Operations
+When a server receives a high volume of incoming requests, it needs to manage multiple connections efficiently. Each connection corresponds to a **file descriptor (fd)**, which is an abstract indicator used to access a file or socket.
+
+### The Role of epoll and kqueue
+Handling thousands of connections simultaneously in a traditional multi-threaded model can be inefficient because creating a thread for each connection is resource-intensive. Instead, operating systems like Linux and MacOS use scalable I/O event notification mechanisms:
+
+- **epoll (Linux)** and **kqueue (MacOS)** are systems that manage multiple file descriptors efficiently. They maintain a set of file descriptors and monitor them for any events (e.g., readiness for reading or writing).
+  
+- **Event Notification Mechanism**: epoll and kqueue notify the application when any of the monitored file descriptors become active. This way, Node.js, via libuv, doesn’t have to poll every file descriptor constantly, which would be inefficient. Instead, it only acts when notified that an event has occurred on a particular fd.
+
+### Event Emitters, Streams, and Buffers
+- **Event Emitters**: In Node.js, many objects (like servers, streams, etc.) emit events. The `EventEmitter` class allows these objects to signal when something happens, like a new connection or data being received.
+  
+- **Streams**: Streams are a way to handle reading or writing data piece by piece, rather than all at once. For instance, file streams allow reading or writing data to a file in chunks.
+
+- **Buffers**: A buffer is a temporary storage area typically used for binary data. In Node.js, buffers are often used to handle raw data streams from the file system or network.
+
+- **Pipes**: Pipes are a mechanism for connecting two streams together, such as piping the output of a readable stream into a writable stream. This is often used for streaming data directly from one source to another, such as reading a file and sending its contents over HTTP.
+
+### Summary
+Node.js is single-threaded at its core but becomes multi-threaded when necessary, thanks to libuv’s thread pool. It efficiently handles high-concurrency environments using epoll and kqueue, which are scalable I/O event notification mechanisms that notify the system when actions need to be taken on specific file descriptors. This architecture allows Node.js to handle many connections simultaneously without blocking, making it highly performant for I/O-bound applications.
